@@ -1,0 +1,6 @@
+Flask
+Flask-PyMongo
+Flask-Restful
+Flask-SQLAlchemy
+gunicorn
+ipython
