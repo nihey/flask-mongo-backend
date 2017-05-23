@@ -8,6 +8,7 @@ from flask import Response
 def json_default(value):
     if isinstance(value, Decimal):
         return float(value)
+    return unicode(value)
 
 
 def rest(domain):

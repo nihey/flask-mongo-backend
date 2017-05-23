@@ -15,6 +15,11 @@ class BaseCollection(object):
             func = lambda x: '-' + x.group(0).lower()
             return re.sub(r'[A-Z]', func, cls.__name__)[1:]
 
+        # Can this collection be used for common operations?
+        @property
+        def __valid__(cls):
+            return len(cls.__collection_keys__) > 0
+
     #: An array of sets, each set defining a unique key of the collection.
     #: The first set of keys is considered to be the primary key
     #:
@@ -29,7 +34,7 @@ class BaseCollection(object):
     def generate_indexes(cls):
         for keys in cls.__collection_keys__:
             uniques = [(k, pymongo.DESCENDING) for k in keys]
-            return cls.create_index(uniques, unique=True)
+            cls.create_index(uniques, unique=True)
 
     #
     # MongoDB Methods
@@ -58,6 +63,10 @@ class BaseCollection(object):
     @classmethod
     def update(cls, *args, **kwargs):
         return mongo.db[cls.__collection__].update(*args, **kwargs)
+
+    @classmethod
+    def remove(cls, *args, **kwargs):
+        return mongo.db[cls.__collection__].remove(*args, **kwargs)
 
     @classmethod
     def get_or_create(cls, **attrs):

@@ -1,10 +1,18 @@
 import os
+import json
 from datetime import datetime
 from inspect import isclass
 
+from flask import Response
+
+
 def log(*args):
     string = ' '.join([unicode(a).encode('utf-8') for a in args])
-    print datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '-', string
+    print(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '-', string)
+
+
+def json_response(dict_, code=200):
+    return Response(json.dumps(dict_), code, mimetype='application/json')
 
 
 def get_subclasses(directory, cls):

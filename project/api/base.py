@@ -1,7 +1,12 @@
+import json
+
 from flask import request
 from flask_restful import Resource
+from cached_property import cached_property
 
 from project.app import app
+from project.collections.base import BaseCollection
+from project.utils import get_subclasses, json_response
 
 
 class BaseResource(Resource):
@@ -27,22 +32,52 @@ class BaseResource(Resource):
         return {'message': 'OK'}
 
 
+def general_resource_endpoint(func):
+    def decorated_function(self, resource, *args, **kwargs):
+        if resource not in self.resources.keys():
+            return json_response({'error': 'resource not found'}, code=404)
+
+        resource = self.resources[resource]
+        if hasattr(resource, func.__name__):
+            return getattr(resource, func.__name__)(self, *args, **kwargs)
+        return func(self, resource, *args, **kwargs)
+    return decorated_function
+
+
 class GeneralResource(BaseResource):
     """General Resources CRUD operations"""
     route = '/<resource>'
 
-    def get(self):
-        """TBD"""
-        pass
+    # Maximum number of instances returned in a single request
+    limit = 30
 
-    def post(self):
-        """TBD"""
-        pass
+    @cached_property
+    def resources(self):
+        return {r.__collection__:r for r in get_subclasses('project', BaseCollection)
+                if r.__valid__}
 
-    def put(self):
-        """TBD"""
-        pass
+    @general_resource_endpoint
+    def get(self, resource):
+        """Generic endpoint to retrieve collection data (READ)"""
+        # Query
+        q = json.loads(request.args.get('q', 'null'))
+        # Projection
+        p = json.loads(request.args.get('p', 'null'))
 
-    def delete(self):
-        """TBD"""
-        pass
+        # Return value
+        return list(resource.find(q, p).limit(self.limit))
+
+    @general_resource_endpoint
+    def post(self, resource):
+        """Generic endpoint to add collection data (CREATE)"""
+        return resource.get_or_create(**request.json)
+
+    @general_resource_endpoint
+    def patch(self, resource):
+        """Generic endpoint to update collection data (UPDATE)"""
+        return resource.update(request.json['q'], request.json['u'])
+
+    @general_resource_endpoint
+    def delete(self, resource):
+        """Generic endpoint to delete collection data (DELETE)"""
+        return resource.update(request.json['q'], request.json['p'])

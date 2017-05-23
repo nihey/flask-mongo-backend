@@ -20,7 +20,7 @@ def generate_indexes():
     """Create MongoDB indexes set on our collections"""
     from project.utils import get_subclasses, log
     from project.collections.base import BaseCollection
-    for klass in get_subclasses('instats', BaseCollection):
+    for klass in get_subclasses('project', BaseCollection):
         if klass.__collection__ is not None:
             log('generating index', klass.generate_indexes())
 
