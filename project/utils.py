@@ -3,7 +3,8 @@ import json
 from datetime import datetime
 from inspect import isclass
 
-from flask import Response
+from flask import Response, session
+from bson.objectid import ObjectId
 
 
 def log(*args):
@@ -13,6 +14,20 @@ def log(*args):
 
 def json_response(dict_, code=200):
     return Response(json.dumps(dict_), code, mimetype='application/json')
+
+
+def unset_user():
+    session.pop('user_id', None)
+
+
+def set_user(user):
+    session['user_id'] = unicode(user['_id'])
+    return user
+
+
+def get_user():
+    from project.collections.user import User
+    return User.find_one({'_id': ObjectId(session.get('user_id'))})
 
 
 def get_subclasses(directory, cls):
