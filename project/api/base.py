@@ -32,6 +32,17 @@ class BaseResource(Resource):
         return {'message': 'OK'}
 
 
+def required(*required_args):
+    def decorator(func):
+        def decorated_function(self, *args, **kwargs):
+            missing = [a for a in required_args if self.get_arg(a) is None]
+            if len(missing) > 0:
+                return json_response({'missing': missing}, code=400)
+            return func(self, *args, **kwargs)
+        return decorated_function
+    return decorator
+
+
 def general_resource_endpoint(func):
     def decorated_function(self, resource, *args, **kwargs):
         if resource not in self.resources.keys():

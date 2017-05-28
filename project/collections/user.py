@@ -7,7 +7,6 @@ from project.utils import json_response
 
 class User(BaseCollection):
     __collection_keys__ = [
-        {'username'},
         {'email'},
     ]
 
