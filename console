@@ -2,7 +2,7 @@
 
 import IPython
 
-from project.app import app
+from project.app import app, mongo
 from project.collections.user import *
 
 

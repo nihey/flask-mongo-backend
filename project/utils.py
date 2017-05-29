@@ -59,3 +59,34 @@ def get_subclasses(directory, cls):
             subclasses += get_subclasses(subdir, cls)
 
     return subclasses
+
+
+def get_fixture(name):
+    directory = os.path.dirname(os.path.dirname(__file__))
+    path = os.path.join(directory, 'assets', 'fixtures', name)
+
+    if not os.path.exists(path):
+        return None
+
+    with open(path) as file_:
+        content = file_.read()
+        if name.endswith('.json'):
+            return json.loads(content)
+        return content
+
+
+def set_fixture(name, content):
+    if name.endswith('.json'):
+        content_text = json.dumps(content, sort_keys=True, indent=2)
+    else:
+        content_text = content
+
+    directory = os.path.dirname(os.path.dirname(__file__))
+    path = os.path.join(directory, 'assets', 'fixtures', name)
+    with open(path, 'w') as file_:
+        file_.write(content_text)
+    return content
+
+
+def get_or_set_fixture(name, content):
+    return get_fixture(name) or set_fixture(name, content)

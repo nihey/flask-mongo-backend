@@ -3,5 +3,7 @@ Flask-PyMongo
 Flask-Restful
 Flask-SQLAlchemy
 cached-property
+coverage
 gunicorn
 ipython
+mock
