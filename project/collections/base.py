@@ -12,7 +12,8 @@ class BaseCollection(object):
         #: The name of the collection (like the name of the table)
         @property
         def __collection__(cls):
-            func = lambda x: '-' + x.group(0).lower()
+            def func(x):
+                return '-' + x.group(0).lower()
             return re.sub(r'[A-Z]', func, cls.__name__)[1:]
 
         # Can this collection be used for common operations?

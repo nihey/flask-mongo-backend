@@ -59,7 +59,6 @@ def rest_resource(cls):
             return response
         return decorated
 
-
     # Decorate get, put, post, delete and patch methods from the class
     for method in ['get', 'put', 'post', 'delete', 'patch', 'options']:
         if hasattr(cls, method):

@@ -15,6 +15,7 @@ except ImportStringError:
 # Our custom Flask CLI commands
 #
 
+
 @app.cli.command()
 def generate_indexes():
     """Create MongoDB indexes set on our collections"""

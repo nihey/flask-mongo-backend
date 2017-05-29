@@ -64,7 +64,7 @@ class GeneralResource(BaseResource):
 
     @cached_property
     def resources(self):
-        return {r.__collection__:r for r in get_subclasses('project', BaseCollection)
+        return {r.__collection__: r for r in get_subclasses('project', BaseCollection)
                 if r.__valid__}
 
     @general_resource_endpoint
