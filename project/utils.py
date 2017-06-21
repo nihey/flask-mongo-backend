@@ -16,6 +16,10 @@ def json_response(dict_, code=200):
     return Response(json.dumps(dict_), code, mimetype='application/json')
 
 
+def get_ip():
+    return request.headers.get('X-Real-IP', request.remote_addr)
+
+
 def unset_user():
     session.pop('user_id', None)
 

@@ -1,11 +1,15 @@
 import re
 
 import pymongo
+from flask import request
 
 from project.app import mongo
 
 
 class BaseCollection(object):
+
+    ASCENDING = pymongo.ASCENDING
+    DESCENDING = pymongo.DESCENDING
 
     #: Sets __collection__ property in a dynamic way
     class __metaclass__(type):
@@ -70,6 +74,14 @@ class BaseCollection(object):
         return mongo.db[cls.__collection__].remove(*args, **kwargs)
 
     @classmethod
+    def group(cls, *args, **kwargs):
+        return mongo.db[cls.__collection__].group(*args, **kwargs)
+
+    @classmethod
+    def aggregate(cls, *args, **kwargs):
+        return mongo.db[cls.__collection__].aggregate(*args, **kwargs)
+
+    @classmethod
     def get_or_create(cls, **attrs):
         # Will cause a KeyError if a key is missing
         keys = {key: attrs[key] for key in cls.__collection_keys__[0]}
@@ -87,3 +99,15 @@ class BaseCollection(object):
             '$set': attrs,
         })
         return cls.find_one(keys)
+
+    #
+    # API
+    #
+
+    @classmethod
+    def get_arg(cls, attr, default=None):
+        """Return the argument, wheter it came from querystring or form data"""
+        request_json = request.get_json()
+        if request_json:
+            return request_json.get(attr, default)
+        return request.form.get(attr, request.args.get(attr, default))
